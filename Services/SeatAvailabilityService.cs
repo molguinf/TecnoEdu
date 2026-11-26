@@ -2,31 +2,31 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using TecnoEdu.Data;
-using TecnoEdu.Models.Entidades;
+using TecnoEdu.Models.Entities;
 
 namespace TecnoEdu.Services;
 
-public class DisponibilidadCuposService : IDisponibilidadCuposService
+public class SeatAvailabilityService : ISeatAvailabilityService
 {
     private readonly TecnoEduDbContext _db;
 
-    public DisponibilidadCuposService(TecnoEduDbContext db) => _db = db;
+    public SeatAvailabilityService(TecnoEduDbContext db) => _db = db;
 
-    public async Task<int?> ConsultarDisponiblesAsync(int idOferta, CancellationToken ct = default)
+    public async Task<int?> GetAvailableSeatsAsync(int idOferta, CancellationToken ct = default)
     {
-        var oferta = await _db.OfertasCurso.AsNoTracking()
-            .Where(o => o.IdOferta == idOferta)
-            .Select(o => new { o.CapacidadTotal, o.Estado })
+        var oferta = await _db.CourseOfferings.AsNoTracking()
+            .Where(o => o.OfferingId == idOferta)
+            .Select(o => new { o.TotalCapacity, o.Status })
             .SingleOrDefaultAsync(ct);
 
-        if (oferta is null || oferta.Estado != "Abierta") return null;
+        if (oferta is null || oferta.Status != "Open") return null;
 
-        var confirmadas = await _db.Reservas.AsNoTracking().CountAsync(
-            r => r.IdOferta == idOferta && r.Estado == "Confirmada", ct);
-        return Math.Max(0, oferta.CapacidadTotal - confirmadas);
+        var confirmadas = await _db.Reservations.AsNoTracking().CountAsync(
+            r => r.OfferingId == idOferta && r.Status == "Confirmed", ct);
+        return Math.Max(0, oferta.TotalCapacity - confirmadas);
     }
 
-    public async Task<ResultadoReserva> ReservarAsync(int idOferta, string userId,
+    public async Task<ReservationResult> ReserveAsync(int idOferta, string userId,
         CancellationToken ct = default)
     {
         if (idOferta <= 0 || string.IsNullOrWhiteSpace(userId))
@@ -35,41 +35,41 @@ public class DisponibilidadCuposService : IDisponibilidadCuposService
         await using var tx = await _db.Database.BeginTransactionAsync(ct);
         // El bloqueo exclusivo por oferta serializa todas las reservas/cancelaciones
         // que pasen por este servicio, incluso desde distintas instancias del sitio.
-        if (!await BloquearOfertaAsync(idOferta, ct))
+        if (!await LockOfferingAsync(idOferta, ct))
             return new(false, "La oferta está ocupada. Vuelve a intentar.");
 
-        var oferta = await _db.OfertasCurso.AsNoTracking()
-            .Where(o => o.IdOferta == idOferta)
-            .Select(o => new { o.IdOferta, o.CapacidadTotal, o.Estado })
+        var oferta = await _db.CourseOfferings.AsNoTracking()
+            .Where(o => o.OfferingId == idOferta)
+            .Select(o => new { o.OfferingId, o.TotalCapacity, o.Status })
             .SingleOrDefaultAsync(ct);
 
-        if (oferta is null || oferta.Estado != "Abierta")
+        if (oferta is null || oferta.Status != "Open")
             return new(false, "La oferta no está abierta para reservas.");
 
-        if (await _db.Reservas.AnyAsync(r =>
-            r.IdOferta == idOferta && r.UserId == userId &&
-            r.Estado == "Confirmada", ct))
+        if (await _db.Reservations.AnyAsync(r =>
+            r.OfferingId == idOferta && r.UserId == userId &&
+            r.Status == "Confirmed", ct))
             return new(false, "Ya tienes una reserva confirmada para esta oferta.");
 
-        var confirmadas = await _db.Reservas.CountAsync(
-            r => r.IdOferta == idOferta && r.Estado == "Confirmada", ct);
-        if (confirmadas >= oferta.CapacidadTotal)
+        var confirmadas = await _db.Reservations.CountAsync(
+            r => r.OfferingId == idOferta && r.Status == "Confirmed", ct);
+        if (confirmadas >= oferta.TotalCapacity)
             return new(false, "No quedan cupos disponibles.");
 
-        var reserva = new Reserva
+        var reserva = new Reservation
         {
-            IdOferta = idOferta,
+            OfferingId = idOferta,
             UserId = userId,
-            FechaSolicitud = DateTime.UtcNow,
-            Estado = "Confirmada"
+            RequestedAt = DateTime.UtcNow,
+            Status = "Confirmed"
         };
-        _db.Reservas.Add(reserva);
+        _db.Reservations.Add(reserva);
 
         try
         {
             await _db.SaveChangesAsync(ct);
             await tx.CommitAsync(ct);
-            return new(true, "Reserva confirmada.", reserva.IdReserva);
+            return new(true, "Reservation confirmada.", reserva.ReservationId);
         }
         catch (DbUpdateException ex)
             when (ex.InnerException is SqlException { Number: 2601 or 2627 })
@@ -79,36 +79,36 @@ public class DisponibilidadCuposService : IDisponibilidadCuposService
         }
     }
 
-    public async Task<ResultadoReserva> CancelarAsync(int idReserva, string userId,
+    public async Task<ReservationResult> CancelAsync(int idReserva, string userId,
         CancellationToken ct = default)
     {
         if (idReserva <= 0 || string.IsNullOrWhiteSpace(userId))
-            return new(false, "Reserva o usuario no válido.");
+            return new(false, "Reservation o usuario no válido.");
 
-        var referencia = await _db.Reservas.AsNoTracking()
-            .Where(r => r.IdReserva == idReserva && r.UserId == userId)
-            .Select(r => new { r.IdOferta })
+        var referencia = await _db.Reservations.AsNoTracking()
+            .Where(r => r.ReservationId == idReserva && r.UserId == userId)
+            .Select(r => new { r.OfferingId })
             .SingleOrDefaultAsync(ct);
         if (referencia is null)
             return new(false, "No existe una reserva de este usuario.");
 
         await using var tx = await _db.Database.BeginTransactionAsync(ct);
-        if (!await BloquearOfertaAsync(referencia.IdOferta, ct))
+        if (!await LockOfferingAsync(referencia.OfferingId, ct))
             return new(false, "La oferta está ocupada. Vuelve a intentar.");
 
-        var reserva = await _db.Reservas.SingleOrDefaultAsync(r =>
-            r.IdReserva == idReserva && r.UserId == userId, ct);
+        var reserva = await _db.Reservations.SingleOrDefaultAsync(r =>
+            r.ReservationId == idReserva && r.UserId == userId, ct);
 
-        if (reserva is null || reserva.Estado != "Confirmada")
+        if (reserva is null || reserva.Status != "Confirmed")
             return new(false, "La reserva no está confirmada o ya fue cancelada.");
 
-        reserva.Estado = "Cancelada";
+        reserva.Status = "Cancelled";
         await _db.SaveChangesAsync(ct);
         await tx.CommitAsync(ct);
-        return new(true, "Reserva cancelada.", reserva.IdReserva);
+        return new(true, "Reservation cancelada.", reserva.ReservationId);
     }
 
-    private async Task<bool> BloquearOfertaAsync(int idOferta, CancellationToken ct)
+    private async Task<bool> LockOfferingAsync(int idOferta, CancellationToken ct)
     {
         // SQL Server sp_getapplock exige una transacción abierta con LockOwner=Transaction.
         // Resultado >= 0: bloqueo concedido; negativo: timeout/error/deadlock.

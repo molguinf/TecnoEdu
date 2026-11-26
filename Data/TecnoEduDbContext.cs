@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TecnoEdu.Models.Entidades;
+using TecnoEdu.Models.Entities;
 
 namespace TecnoEdu.Data;
 
@@ -10,20 +10,20 @@ public class TecnoEduDbContext : IdentityDbContext<ApplicationUser>
     public TecnoEduDbContext(DbContextOptions<TecnoEduDbContext> options)
         : base(options) { }
 
-    public DbSet<Instituto> Institutos => Set<Instituto>();
-    public DbSet<InstitutoUsuario> InstitutoUsuarios => Set<InstitutoUsuario>();
-    public DbSet<Categoria> Categorias => Set<Categoria>();
-    public DbSet<Curso> Cursos => Set<Curso>();
-    public DbSet<OfertaCurso> OfertasCurso => Set<OfertaCurso>();
-    public DbSet<Reserva> Reservas => Set<Reserva>();
-    public DbSet<Consulta> Consultas => Set<Consulta>();
-    public DbSet<Mensaje> Mensajes => Set<Mensaje>();
+    public DbSet<Institute> Institutes => Set<Institute>();
+    public DbSet<InstituteUser> InstituteUsers => Set<InstituteUser>();
+    public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Course> Courses => Set<Course>();
+    public DbSet<CourseOffering> CourseOfferings => Set<CourseOffering>();
+    public DbSet<Reservation> Reservations => Set<Reservation>();
+    public DbSet<Inquiry> Inquiries => Set<Inquiry>();
+    public DbSet<InquiryMessage> Messages => Set<InquiryMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);  // Tablas AspNetUsers/AspNetRoles/AspNetUserRoles, etc.
         modelBuilder.Entity<ApplicationUser>()
-            .Property(u => u.NombreCompleto).HasMaxLength(150).IsRequired();
+            .Property(u => u.FullName).HasMaxLength(150).IsRequired();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(TecnoEduDbContext).Assembly);
     }
 }

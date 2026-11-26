@@ -17,15 +17,15 @@ namespace TecnoEdu.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            var categories = await _dbContext.Categorias
-                .OrderBy(c => c.Nombre)
+            var categories = await _dbContext.Categories
+                .OrderBy(c => c.Name)
                 .Select(c => new CategoryItem
                 {
-                    CategoryId = c.IdCategoria,
-                    Name = c.Nombre,
-                    Description = c.Descripcion,
-                    CourseCount = c.Cursos.Count(course => course.Activo
-                        && course.Instituto.EstadoVerificacion == "Aprobado")
+                    CategoryId = c.CategoryId,
+                    Name = c.Name,
+                    Description = c.Description,
+                    CourseCount = c.Courses.Count(course => course.IsActive
+                        && course.Institute.VerificationStatus == "Approved")
                 })
                 .ToListAsync();
 

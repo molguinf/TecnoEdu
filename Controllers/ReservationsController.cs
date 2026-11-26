@@ -12,9 +12,9 @@ namespace TecnoEdu.Controllers
     [Route("api/reservations")]
     public class ReservationsController : ControllerBase
     {
-        private readonly IDisponibilidadCuposService _seatService;
+        private readonly ISeatAvailabilityService _seatService;
 
-        public ReservationsController(IDisponibilidadCuposService seatService)
+        public ReservationsController(ISeatAvailabilityService seatService)
         {
             _seatService = seatService;
         }
@@ -28,9 +28,9 @@ namespace TecnoEdu.Controllers
                 return Unauthorized();
             }
 
-            var result = await _seatService.ReservarAsync(request.OfferId, userId);
-            var response = new { success = result.Exito, message = result.Mensaje, reservationId = result.IdReserva };
-            return result.Exito ? Ok(response) : Conflict(response);
+            var result = await _seatService.ReserveAsync(request.OfferId, userId);
+            var response = new { success = result.Success, message = result.InquiryMessage, reservationId = result.ReservationId };
+            return result.Success ? Ok(response) : Conflict(response);
         }
 
         [HttpPost("{reservationId:int}/cancel")]
@@ -42,9 +42,9 @@ namespace TecnoEdu.Controllers
                 return Unauthorized();
             }
 
-            var result = await _seatService.CancelarAsync(reservationId, userId);
-            var response = new { success = result.Exito, message = result.Mensaje, reservationId = result.IdReserva };
-            return result.Exito ? Ok(response) : Conflict(response);
+            var result = await _seatService.CancelAsync(reservationId, userId);
+            var response = new { success = result.Success, message = result.InquiryMessage, reservationId = result.ReservationId };
+            return result.Success ? Ok(response) : Conflict(response);
         }
     }
 }

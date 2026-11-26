@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
-namespace TecnoEdu.Models.Entidades;
+namespace TecnoEdu.Models.Entities;
 
-// Usuario Identity: AspNetUsers, llave de tipo string/nvarchar(450).
+// User Identity: AspNetUsers, llave de tipo string/nvarchar(450).
 // Este modelo debe consolidarse con el que implemente el responsable de autenticación.
 public class ApplicationUser : IdentityUser
 {
     [Required, StringLength(150)]
-    public string NombreCompleto { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
 }

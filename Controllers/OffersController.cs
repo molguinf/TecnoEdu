@@ -8,9 +8,9 @@ namespace TecnoEdu.Controllers
     [Route("api/offers")]
     public class OffersController : ControllerBase
     {
-        private readonly IDisponibilidadCuposService _seatService;
+        private readonly ISeatAvailabilityService _seatService;
 
-        public OffersController(IDisponibilidadCuposService seatService)
+        public OffersController(ISeatAvailabilityService seatService)
         {
             _seatService = seatService;
         }
@@ -18,7 +18,7 @@ namespace TecnoEdu.Controllers
         [HttpGet("{offerId:int}/seats")]
         public async Task<IActionResult> Seats(int offerId)
         {
-            var availableSeats = await _seatService.ConsultarDisponiblesAsync(offerId);
+            var availableSeats = await _seatService.GetAvailableSeatsAsync(offerId);
             if (availableSeats == null)
             {
                 return NotFound(new { message = "Offer not found or closed." });

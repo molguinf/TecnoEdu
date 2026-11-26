@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TecnoEdu.Data;
-using TecnoEdu.Models.Entidades;
+using TecnoEdu.Models.Entities;
 using TecnoEdu.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +18,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<TecnoEduDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<IDisponibilidadCuposService, DisponibilidadCuposService>();
+builder.Services.AddScoped<ISeatAvailabilityService, SeatAvailabilityService>();
 
 var app = builder.Build();
 

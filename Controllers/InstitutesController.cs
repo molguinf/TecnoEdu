@@ -21,7 +21,7 @@ namespace TecnoEdu.Controllers
             city = city?.Trim() ?? "";
 
             // Institutes that are not approved yet are never shown.
-            var approved = _dbContext.Institutos.Where(i => i.EstadoVerificacion == "Aprobado");
+            var approved = _dbContext.Institutes.Where(i => i.VerificationStatus == "Approved");
 
             var model = new InstituteDirectoryViewModel
             {
@@ -30,7 +30,7 @@ namespace TecnoEdu.Controllers
             };
 
             model.Cities = await approved
-                .Select(i => i.Ciudad.Trim())
+                .Select(i => i.City.Trim())
                 .Where(name => name != "")
                 .Distinct()
                 .OrderBy(name => name)
@@ -39,24 +39,24 @@ namespace TecnoEdu.Controllers
             var institutes = approved;
             if (search != "")
             {
-                institutes = institutes.Where(i => i.Nombre.Contains(search));
+                institutes = institutes.Where(i => i.Name.Contains(search));
             }
             if (city != "")
             {
-                institutes = institutes.Where(i => i.Ciudad.Trim() == city);
+                institutes = institutes.Where(i => i.City.Trim() == city);
             }
 
             model.Institutes = await institutes
-                .OrderBy(i => i.Nombre)
-                .ThenBy(i => i.IdInstituto)
+                .OrderBy(i => i.Name)
+                .ThenBy(i => i.InstituteId)
                 .Select(i => new InstituteCard
                 {
-                    InstituteId = i.IdInstituto,
-                    Name = i.Nombre,
-                    Address = i.Direccion,
-                    City = i.Ciudad,
-                    Phone = i.Telefono,
-                    Email = i.EmailContacto
+                    InstituteId = i.InstituteId,
+                    Name = i.Name,
+                    Address = i.Address,
+                    City = i.City,
+                    Phone = i.Phone,
+                    Email = i.ContactEmail
                 })
                 .ToListAsync();
 
@@ -66,18 +66,18 @@ namespace TecnoEdu.Controllers
         // GET: Institutes/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var model = await _dbContext.Institutos
-                .Where(i => i.IdInstituto == id && i.EstadoVerificacion == "Aprobado")
+            var model = await _dbContext.Institutes
+                .Where(i => i.InstituteId == id && i.VerificationStatus == "Approved")
                 .Select(i => new InstituteDetailsViewModel
                 {
-                    InstituteId = i.IdInstituto,
-                    Name = i.Nombre,
-                    Description = i.Descripcion,
-                    Address = i.Direccion,
-                    City = i.Ciudad,
-                    Phone = i.Telefono,
-                    Email = i.EmailContacto,
-                    Website = i.SitioWeb,
+                    InstituteId = i.InstituteId,
+                    Name = i.Name,
+                    Description = i.Description,
+                    Address = i.Address,
+                    City = i.City,
+                    Phone = i.Phone,
+                    Email = i.ContactEmail,
+                    Website = i.Website,
                     LogoUrl = i.LogoUrl
                 })
                 .FirstOrDefaultAsync();
@@ -91,18 +91,18 @@ namespace TecnoEdu.Controllers
             model.Website = SafeUrl(model.Website);
             model.LogoUrl = SafeUrl(model.LogoUrl);
 
-            model.Courses = await _dbContext.Cursos
-                .Where(c => c.IdInstituto == id && c.Activo)
-                .OrderBy(c => c.Titulo)
+            model.Courses = await _dbContext.Courses
+                .Where(c => c.InstituteId == id && c.IsActive)
+                .OrderBy(c => c.Title)
                 .Select(c => new CourseCard
                 {
-                    CourseId = c.IdCurso,
-                    Title = c.Titulo,
-                    CategoryId = c.IdCategoria,
-                    CategoryName = c.Categoria.Nombre,
-                    InstituteName = c.Instituto.Nombre,
-                    DurationHours = c.DuracionHoras,
-                    Modality = c.Modalidad
+                    CourseId = c.CourseId,
+                    Title = c.Title,
+                    CategoryId = c.CategoryId,
+                    CategoryName = c.Category.Name,
+                    InstituteName = c.Institute.Name,
+                    DurationHours = c.DurationHours,
+                    Modality = c.Modality
                 })
                 .ToListAsync();
 

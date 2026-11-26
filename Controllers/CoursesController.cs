@@ -22,23 +22,23 @@ namespace TecnoEdu.Controllers
             modality = modality?.Trim() ?? "";
 
             // Only active courses from approved institutes are public.
-            var publicCourses = _dbContext.Cursos
-                .Where(c => c.Activo && c.Instituto.EstadoVerificacion == "Aprobado");
+            var publicCourses = _dbContext.Courses
+                .Where(c => c.IsActive && c.Institute.VerificationStatus == "Approved");
 
             var courses = publicCourses;
             if (search != "")
             {
-                courses = courses.Where(c => c.Titulo.Contains(search)
-                    || c.Descripcion.Contains(search)
-                    || c.Instituto.Nombre.Contains(search));
+                courses = courses.Where(c => c.Title.Contains(search)
+                    || c.Description.Contains(search)
+                    || c.Institute.Name.Contains(search));
             }
             if (modality != "")
             {
-                courses = courses.Where(c => c.Modalidad == modality);
+                courses = courses.Where(c => c.Modality == modality);
             }
             if (categoryId != null)
             {
-                courses = courses.Where(c => c.IdCategoria == categoryId);
+                courses = courses.Where(c => c.CategoryId == categoryId);
             }
 
             int totalCourses = await courses.CountAsync();
@@ -55,30 +55,30 @@ namespace TecnoEdu.Controllers
             model.Filters.Search = search;
             model.Filters.Modality = modality;
             model.Filters.CategoryId = categoryId;
-            model.Filters.Categories = await _dbContext.Categorias
-                .OrderBy(c => c.Nombre)
-                .Select(c => new CategoryItem { CategoryId = c.IdCategoria, Name = c.Nombre })
+            model.Filters.Categories = await _dbContext.Categories
+                .OrderBy(c => c.Name)
+                .Select(c => new CategoryItem { CategoryId = c.CategoryId, Name = c.Name })
                 .ToListAsync();
             model.Filters.Modalities = await publicCourses
-                .Select(c => c.Modalidad)
+                .Select(c => c.Modality)
                 .Distinct()
                 .OrderBy(m => m)
                 .ToListAsync();
 
             model.Courses = await courses
-                .OrderBy(c => c.Titulo)
-                .ThenBy(c => c.IdCurso)
+                .OrderBy(c => c.Title)
+                .ThenBy(c => c.CourseId)
                 .Skip((page - 1) * PageSize)
                 .Take(PageSize)
                 .Select(c => new CourseCard
                 {
-                    CourseId = c.IdCurso,
-                    Title = c.Titulo,
-                    CategoryId = c.IdCategoria,
-                    CategoryName = c.Categoria.Nombre,
-                    InstituteName = c.Instituto.Nombre,
-                    DurationHours = c.DuracionHoras,
-                    Modality = c.Modalidad
+                    CourseId = c.CourseId,
+                    Title = c.Title,
+                    CategoryId = c.CategoryId,
+                    CategoryName = c.Category.Name,
+                    InstituteName = c.Institute.Name,
+                    DurationHours = c.DurationHours,
+                    Modality = c.Modality
                 })
                 .ToListAsync();
 
@@ -88,35 +88,35 @@ namespace TecnoEdu.Controllers
         // GET: Courses/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var model = await _dbContext.Cursos
-                .Where(c => c.IdCurso == id && c.Activo && c.Instituto.EstadoVerificacion == "Aprobado")
+            var model = await _dbContext.Courses
+                .Where(c => c.CourseId == id && c.IsActive && c.Institute.VerificationStatus == "Approved")
                 .Select(c => new CourseDetailsViewModel
                 {
-                    CourseId = c.IdCurso,
-                    Title = c.Titulo,
-                    Description = c.Descripcion,
-                    Requirements = c.Requisitos,
-                    DurationHours = c.DuracionHoras,
-                    Modality = c.Modalidad,
-                    CategoryId = c.IdCategoria,
-                    CategoryName = c.Categoria.Nombre,
-                    InstituteId = c.IdInstituto,
-                    InstituteName = c.Instituto.Nombre,
-                    InstituteCity = c.Instituto.Ciudad,
-                    InstitutePhone = c.Instituto.Telefono,
-                    InstituteEmail = c.Instituto.EmailContacto,
-                    Offers = c.Ofertas
-                        .Where(o => o.Estado == "Abierta")
-                        .OrderBy(o => o.FechaInicio)
+                    CourseId = c.CourseId,
+                    Title = c.Title,
+                    Description = c.Description,
+                    Requirements = c.Requirements,
+                    DurationHours = c.DurationHours,
+                    Modality = c.Modality,
+                    CategoryId = c.CategoryId,
+                    CategoryName = c.Category.Name,
+                    InstituteId = c.InstituteId,
+                    InstituteName = c.Institute.Name,
+                    InstituteCity = c.Institute.City,
+                    InstitutePhone = c.Institute.Phone,
+                    InstituteEmail = c.Institute.ContactEmail,
+                    Offers = c.Offerings
+                        .Where(o => o.Status == "Open")
+                        .OrderBy(o => o.StartDate)
                         .Select(o => new OfferSummary
                         {
-                            OfferId = o.IdOferta,
-                            StartDate = o.FechaInicio,
-                            EndDate = o.FechaFin,
-                            Schedule = o.HorarioDescripcion,
-                            Price = o.Costo,
-                            Currency = o.Moneda,
-                            AvailableSeats = o.CapacidadTotal - o.Reservas.Count(r => r.Estado == "Confirmada")
+                            OfferId = o.OfferingId,
+                            StartDate = o.StartDate,
+                            EndDate = o.EndDate,
+                            Schedule = o.ScheduleDescription,
+                            Price = o.Price,
+                            Currency = o.Currency,
+                            AvailableSeats = o.TotalCapacity - o.Reservations.Count(r => r.Status == "Confirmed")
                         })
                         .ToList()
                 })
