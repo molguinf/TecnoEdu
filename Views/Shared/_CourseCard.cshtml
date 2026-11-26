@@ -1,0 +1,23 @@
+@model TecnoEdu.Models.ViewModels.CourseCard
+@{
+    var variant = Model.CategoryId % 3;
+}
+<article class="course-card h-100">
+    <div class="course-media course-media--@variant">
+        <partial name="_CourseArt" model="variant" />
+    </div>
+    <div class="course-body">
+        <span class="course-tag">@Model.CategoryName</span>
+        <h3 class="course-title">@Model.Title</h3>
+        <p class="course-inst">@Model.InstituteName</p>
+        <p class="course-meta">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                 stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+            @(Model.DurationHours != null ? $"{Model.DurationHours} hours" : "Duration on request") · @Model.Modality
+        </p>
+        <p class="course-meta">Fees and seats: ask the institute</p>
+        <a class="btn btn-outline-brand w-100 mt-auto" asp-controller="Courses" asp-action="Details" asp-route-id="@Model.CourseId">
+            View details <span aria-hidden="true">→</span><span class="visually-hidden"> of @Model.Title</span>
+        </a>
+    </div>
+</article>

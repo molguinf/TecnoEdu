@@ -1,0 +1,82 @@
+@model TecnoEdu.Models.ViewModels.InstituteDetailsViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+@section Hero {
+    <section class="hero">
+        <div class="container py-4 py-md-5">
+            <nav aria-label="Breadcrumb">
+                <a class="back-link" asp-controller="Institutes" asp-action="Index">
+                    <span aria-hidden="true">←</span> Back to institutes
+                </a>
+            </nav>
+            <div class="d-flex align-items-center gap-3 mt-3">
+                @if (Model.LogoUrl != null)
+                {
+                    <img class="institute-logo" src="@Model.LogoUrl" alt="@Model.Name logo" loading="lazy" />
+                }
+                <div>
+                    <span class="course-tag">@Model.City</span>
+                    <h1 class="page-title mb-1">@Model.Name</h1>
+                </div>
+            </div>
+            <p class="hero-lead mb-0">@Model.Address, @Model.City</p>
+        </div>
+    </section>
+}
+
+<div class="row g-4 pt-5">
+    <div class="col-lg-8">
+        <section class="mb-5" aria-labelledby="about-title">
+            <h2 id="about-title" class="section-title">About the institute</h2>
+            <p class="detail-text">@Model.Description</p>
+        </section>
+
+        <section aria-labelledby="courses-title">
+            <h2 id="courses-title" class="section-title">Courses offered</h2>
+            <p class="section-lead">
+                @(Model.Courses.Count == 1 ? "1 course available" : $"{Model.Courses.Count} courses available")
+            </p>
+            @if (Model.Courses.Count == 0)
+            {
+                <div class="empty-state">
+                    <p class="mb-0">This institute has not published any courses yet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-md-2 g-4">
+                    @foreach (var course in Model.Courses)
+                    {
+                        <div class="col">
+                            <partial name="_CourseCard" model="course" />
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    </div>
+
+    <aside class="col-lg-4" aria-labelledby="contact-title">
+        <div class="course-card sticky-lg-top contact-card">
+            <div class="course-body">
+                <h2 id="contact-title" class="course-title mt-0 mb-3">Contact</h2>
+                <dl class="contact-list mb-3">
+                    <dt>Address</dt>
+                    <dd>@Model.Address, @Model.City</dd>
+                    <dt>Phone</dt>
+                    <dd>@Model.Phone</dd>
+                    <dt>Email</dt>
+                    <dd class="text-break"><a href="mailto:@Model.Email">@Model.Email</a></dd>
+                    @if (Model.Website != null)
+                    {
+                        <dt>Website</dt>
+                        <dd class="text-break"><a href="@Model.Website" target="_blank" rel="noopener noreferrer">@Model.Website</a></dd>
+                    }
+                </dl>
+                <a class="btn btn-brand w-100" href="mailto:@Model.Email">Email the institute</a>
+            </div>
+        </div>
+    </aside>
+</div>

@@ -1,0 +1,20 @@
+@model TecnoEdu.Models.ViewModels.CourseFilterViewModel
+@{
+    string? search = Model.Search != "" ? Model.Search : null;
+    string? modality = Model.Modality != "" ? Model.Modality : null;
+}
+
+<nav class="d-flex flex-wrap gap-2" aria-label="Study areas">
+    <a class="chip @(Model.CategoryId == null ? "active" : null)"
+       aria-current="@(Model.CategoryId == null ? "page" : null)"
+       asp-controller="Courses" asp-action="Index"
+       asp-route-search="@search" asp-route-modality="@modality">All</a>
+    @foreach (var category in Model.Categories)
+    {
+        var isActive = category.CategoryId == Model.CategoryId;
+        <a class="chip @(isActive ? "active" : null)" aria-current="@(isActive ? "page" : null)"
+           asp-controller="Courses" asp-action="Index"
+           asp-route-categoryId="@category.CategoryId"
+           asp-route-search="@search" asp-route-modality="@modality">@category.Name</a>
+    }
+</nav>

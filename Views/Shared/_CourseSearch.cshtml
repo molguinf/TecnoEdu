@@ -1,0 +1,25 @@
+@model TecnoEdu.Models.ViewModels.CourseFilterViewModel
+
+<form method="get" asp-controller="Courses" asp-action="Index"
+      role="search" aria-label="Search courses" class="search-box">
+    @if (Model.CategoryId != null)
+    {
+        <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+    }
+    <label for="search" class="visually-hidden">What would you like to study?</label>
+    <input id="search" name="search" type="search" class="form-control search-input"
+           placeholder="What would you like to study?" value="@Model.Search" />
+    <label for="modality" class="visually-hidden">Modality</label>
+    <select id="modality" name="modality" class="form-select search-select">
+        <option value="">Any modality</option>
+        @foreach (var item in Model.Modalities)
+        {
+            <option value="@item" selected="@(item == Model.Modality)">@item</option>
+        }
+    </select>
+    <button type="submit" class="btn btn-brand search-button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+        Search
+    </button>
+</form>

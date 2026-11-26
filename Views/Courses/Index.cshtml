@@ -1,0 +1,82 @@
+@model TecnoEdu.Models.ViewModels.CourseCatalogViewModel
+@{
+    ViewData["Title"] = "Course catalog";
+    var filters = Model.Filters;
+    string? search = filters.Search != "" ? filters.Search : null;
+    string? modality = filters.Modality != "" ? filters.Modality : null;
+}
+
+@section Hero {
+    <section class="hero">
+        <div class="container py-4 py-md-5">
+            <span class="hero-badge"><span aria-hidden="true">✦</span> Catalog</span>
+            <h1 class="page-title">Course <span class="text-brand">catalog</span></h1>
+            <p class="hero-lead">Filter by area, modality or keyword and find your next program.</p>
+            <partial name="_CourseSearch" model="filters" />
+        </div>
+    </section>
+}
+
+<section class="pt-5" aria-label="Study areas">
+    <partial name="_CategoryChips" model="filters" />
+</section>
+
+<section class="pt-4" aria-labelledby="results-title">
+    <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 mb-3">
+        <h2 id="results-title" class="section-title mb-0">
+            @(Model.TotalCourses == 1 ? "1 course found" : $"{Model.TotalCourses} courses found")
+        </h2>
+        @if (filters.HasFilters)
+        {
+            <a class="fw-semibold text-decoration-none" asp-controller="Courses" asp-action="Index">Clear filters</a>
+        }
+    </div>
+
+    @if (Model.Courses.Count == 0)
+    {
+        <div class="empty-state">
+            <p class="mb-0">
+                @(filters.HasFilters ? "No courses match these filters." : "There are no courses published yet.")
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            @foreach (var course in Model.Courses)
+            {
+                <div class="col">
+                    <partial name="_CourseCard" model="course" />
+                </div>
+            }
+        </div>
+    }
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="mt-5" aria-label="Catalog pages">
+            <ul class="pagination pagination-brand justify-content-center flex-wrap">
+                <li class="page-item @(Model.Page == 1 ? "disabled" : null)">
+                    <a class="page-link" asp-controller="Courses" asp-action="Index"
+                       asp-route-search="@search" asp-route-modality="@modality" asp-route-categoryId="@filters.CategoryId"
+                       asp-route-page="@(Model.Page - 1)" aria-label="Previous page">‹</a>
+                </li>
+                @for (var i = 1; i <= Model.TotalPages; i++)
+                {
+                    var isCurrent = i == Model.Page;
+                    <li class="page-item @(isCurrent ? "active" : null)">
+                        <a class="page-link" aria-current="@(isCurrent ? "page" : null)"
+                           asp-controller="Courses" asp-action="Index"
+                           asp-route-search="@search" asp-route-modality="@modality" asp-route-categoryId="@filters.CategoryId"
+                           asp-route-page="@i">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : null)">
+                    <a class="page-link" asp-controller="Courses" asp-action="Index"
+                       asp-route-search="@search" asp-route-modality="@modality" asp-route-categoryId="@filters.CategoryId"
+                       asp-route-page="@(Model.Page + 1)" aria-label="Next page">›</a>
+                </li>
+            </ul>
+        </nav>
+    }
+</section>

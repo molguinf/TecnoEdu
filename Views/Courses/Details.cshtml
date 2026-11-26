@@ -1,0 +1,98 @@
+@model TecnoEdu.Models.ViewModels.CourseDetailsViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    var variant = Model.CategoryId % 3;
+}
+
+@section Hero {
+    <section class="hero">
+        <div class="container py-4 py-md-5">
+            <nav aria-label="Breadcrumb">
+                <a class="back-link" asp-controller="Courses" asp-action="Index">
+                    <span aria-hidden="true">←</span> Back to catalog
+                </a>
+            </nav>
+            <span class="course-tag mt-3">@Model.CategoryName</span>
+            <h1 class="page-title">@Model.Title</h1>
+            <p class="hero-lead mb-0">
+                <a asp-controller="Institutes" asp-action="Details" asp-route-id="@Model.InstituteId">@Model.InstituteName</a>
+                · @(Model.DurationHours != null ? $"{Model.DurationHours} hours" : "Duration on request") · @Model.Modality
+            </p>
+        </div>
+    </section>
+}
+
+<div class="row g-4 pt-5">
+    <div class="col-lg-8">
+        <section class="mb-5" aria-labelledby="about-title">
+            <h2 id="about-title" class="section-title">About the course</h2>
+            <p class="detail-text">@Model.Description</p>
+            @if (!string.IsNullOrWhiteSpace(Model.Requirements))
+            {
+                <h3 class="h6 fw-bold mt-4">Requirements</h3>
+                <p class="detail-text">@Model.Requirements</p>
+            }
+        </section>
+
+        <section aria-labelledby="offers-title">
+            <h2 id="offers-title" class="section-title">Upcoming offers</h2>
+            @if (Model.Offers.Count == 0)
+            {
+                <div class="empty-state">
+                    <p class="mb-0">There are no open offers right now. Ask the institute about new dates.</p>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex flex-column gap-3">
+                    @foreach (var offer in Model.Offers)
+                    {
+                        var seats = Math.Max(0, offer.AvailableSeats);
+                        <article class="offer-card">
+                            <div>
+                                <p class="offer-dates mb-1">
+                                    From @offer.StartDate.ToString("dd/MM/yyyy")
+                                    @if (offer.EndDate != null)
+                                    {
+                                        <text> to @offer.EndDate.Value.ToString("dd/MM/yyyy")</text>
+                                    }
+                                </p>
+                                <p class="course-meta mb-0">@offer.Schedule</p>
+                            </div>
+                            <div class="text-md-end">
+                                <p class="offer-price mb-1">@offer.Price.ToString("N2") @offer.Currency</p>
+                                <span class="badge @(seats > 0 ? "badge-available" : "badge-soldout")">
+                                    @(seats > 0 ? $"{seats} seats available" : "Sold out")
+                                </span>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+        </section>
+    </div>
+
+    <aside class="col-lg-4" aria-labelledby="institute-title">
+        <div class="course-card">
+            <div class="course-media course-media--@variant">
+                <partial name="_CourseArt" model="variant" />
+            </div>
+            <div class="course-body">
+                <h2 id="institute-title" class="course-title">@Model.InstituteName</h2>
+                <p class="course-inst">@Model.InstituteCity</p>
+                <dl class="contact-list mb-3">
+                    <dt>Phone</dt>
+                    <dd>@Model.InstitutePhone</dd>
+                    <dt>Email</dt>
+                    <dd class="text-break"><a href="mailto:@Model.InstituteEmail">@Model.InstituteEmail</a></dd>
+                </dl>
+                <a class="btn btn-brand w-100" href="mailto:@Model.InstituteEmail?subject=@Uri.EscapeDataString("Question: " + Model.Title)">
+                    Contact the institute
+                </a>
+                <a class="btn btn-outline-brand w-100 mt-2" asp-controller="Institutes" asp-action="Details" asp-route-id="@Model.InstituteId">
+                    View institute
+                </a>
+            </div>
+        </div>
+    </aside>
+</div>

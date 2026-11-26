@@ -1,8 +1,66 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model TecnoEdu.Models.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@section Hero {
+    <section class="hero">
+        <div class="container py-5">
+            <span class="hero-badge"><span aria-hidden="true">✦</span> Your future starts here</span>
+            <h1 class="hero-title">Learn today.<br /><span class="text-brand">Transform your future.</span></h1>
+            <p class="hero-lead">
+                Discover technical careers and courses, compare
+                <a asp-controller="Institutes" asp-action="Index">institutes</a>
+                and find the right program for you.
+            </p>
+            <partial name="_CourseSearch" model="Model.Filters" />
+            <p class="hero-hint">Explore technical education options in one place.</p>
+        </div>
+    </section>
+}
+
+<section class="pt-5" aria-labelledby="areas-title">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-2">
+        <div>
+            <h2 id="areas-title" class="section-title">Explore by area</h2>
+            <p class="section-lead">Find <span class="text-brand">what you love</span>.</p>
+        </div>
+        <a class="fw-semibold text-decoration-none mb-3" asp-controller="Categories" asp-action="Index">
+            All areas <span aria-hidden="true">→</span>
+        </a>
+    </div>
+    <partial name="_CategoryChips" model="Model.Filters" />
+</section>
+
+<section class="pt-5" aria-labelledby="courses-title">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-2">
+        <div>
+            <h2 id="courses-title" class="section-title">Discover your next career</h2>
+            <p class="section-lead">Learning opportunities for your <span class="text-brand">professional future</span>.</p>
+        </div>
+        @if (Model.LatestCourses.Count > 0)
+        {
+            <a class="fw-semibold text-decoration-none mb-3" asp-controller="Courses" asp-action="Index">
+                Full catalog <span aria-hidden="true">→</span>
+            </a>
+        }
+    </div>
+
+    @if (Model.LatestCourses.Count == 0)
+    {
+        <div class="empty-state">
+            <p class="mb-0">There are no courses published yet.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            @foreach (var course in Model.LatestCourses)
+            {
+                <div class="col">
+                    <partial name="_CourseCard" model="course" />
+                </div>
+            }
+        </div>
+    }
+</section>

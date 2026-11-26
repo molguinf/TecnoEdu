@@ -1,0 +1,34 @@
+@model List<TecnoEdu.Models.ViewModels.InstituteCard>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">
+        <p class="mb-0">There are no institutes listed yet.</p>
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var institute in Model)
+        {
+            <div class="col">
+                <article class="course-card h-100">
+                    <div class="course-body">
+                        <span class="course-tag">@institute.City</span>
+                        <h2 class="course-title">@institute.Name</h2>
+                        <p class="course-inst">@institute.Address</p>
+                        <dl class="contact-list">
+                            <dt>Phone</dt>
+                            <dd>@institute.Phone</dd>
+                            <dt>Email</dt>
+                            <dd class="text-break"><a href="mailto:@institute.Email">@institute.Email</a></dd>
+                        </dl>
+                        <a class="btn btn-outline-brand w-100 mt-auto" asp-controller="Institutes" asp-action="Details" asp-route-id="@institute.InstituteId">
+                            View institute <span aria-hidden="true">→</span><span class="visually-hidden"> @institute.Name</span>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+}
