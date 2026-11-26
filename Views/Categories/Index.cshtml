@@ -1,0 +1,49 @@
+@model List<TecnoEdu.Models.ViewModels.CategoryItem>
+@{
+    ViewData["Title"] = "Study areas";
+}
+
+@section Hero {
+    <section class="hero">
+        <div class="container py-4 py-md-5">
+            <span class="hero-badge"><span aria-hidden="true">✦</span> Areas</span>
+            <h1 class="page-title">Study <span class="text-brand">areas</span></h1>
+            <p class="hero-lead mb-0">Choose an area to see all of its courses.</p>
+        </div>
+    </section>
+}
+
+<section class="pt-5" aria-label="Areas">
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            <p class="mb-0">There are no areas yet.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var category in Model)
+            {
+                var variant = category.CategoryId % 3;
+                <div class="col">
+                    <a class="course-card category-card h-100" asp-controller="Courses" asp-action="Index" asp-route-categoryId="@category.CategoryId">
+                        <div class="course-media course-media--@variant">
+                            <partial name="_CourseArt" model="variant" />
+                        </div>
+                        <div class="course-body">
+                            <h2 class="course-title mt-0">@category.Name</h2>
+                            @if (!string.IsNullOrWhiteSpace(category.Description))
+                            {
+                                <p class="course-inst mb-2">@category.Description</p>
+                            }
+                            <p class="course-meta mb-0">
+                                @(category.CourseCount == 1 ? "1 course" : $"{category.CourseCount} courses")
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</section>

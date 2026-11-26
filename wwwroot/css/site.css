@@ -1,5 +1,25 @@
+/* ===== TecnoEdu: design tokens ===== */
+:root {
+  --te-brand: #4338ca;
+  --te-brand-hover: #3730a3;
+  --te-brand-soft: #eef2ff;
+  --te-brand-light: #a5b4fc;
+  --te-ink: #0f172a;
+  --te-text: #334155;
+  --te-muted: #64748b;
+  --te-border: #e2e8f0;
+  --te-surface: #ffffff;
+  --te-footer: #1e2535;
+  --te-radius: 1rem;
+
+  --bs-body-font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bs-body-color: var(--te-text);
+  --bs-link-color-rgb: 67, 56, 202;
+  --bs-link-hover-color-rgb: 55, 48, 163;
+}
+
 html {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 @media (min-width: 768px) {
@@ -8,24 +28,437 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+  background: var(--te-surface);
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.text-brand {
+  color: var(--te-brand) !important;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.text-brand-light {
+  color: var(--te-brand-light);
+}
+
+/* ===== Buttons ===== */
+.btn {
+  font-weight: 600;
+  border-radius: .6rem;
+}
+
+.btn-brand {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--te-brand);
+  --bs-btn-border-color: var(--te-brand);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--te-brand-hover);
+  --bs-btn-hover-border-color: var(--te-brand-hover);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--te-brand-hover);
+  --bs-btn-active-border-color: var(--te-brand-hover);
+  padding: .55rem 1.2rem;
+}
+
+.btn-outline-brand {
+  --bs-btn-color: var(--te-brand);
+  --bs-btn-border-color: var(--te-brand);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--te-brand);
+  --bs-btn-hover-border-color: var(--te-brand);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--te-brand-hover);
+  --bs-btn-active-border-color: var(--te-brand-hover);
+  border-width: 1.5px;
+}
+
+.btn:focus-visible,
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--te-brand-light);
+  box-shadow: 0 0 0 .25rem rgba(67, 56, 202, .2);
+}
+
+/* ===== Header ===== */
+.site-header {
+  background: var(--te-surface);
+  border-bottom: 1px solid var(--te-border);
+}
+
+.site-header .navbar {
+  padding-block: .9rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-weight: 800;
+  font-size: 1.35rem;
+  color: var(--te-ink);
+  letter-spacing: -.02em;
+}
+
+.brand-mark {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 3px solid var(--te-ink);
+  border-radius: .2rem;
+  box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 6px var(--te-ink);
+}
+
+.site-header .nav-link {
+  color: var(--te-text);
+  font-weight: 500;
+  font-size: .95rem;
+}
+
+.site-header .nav-link:hover,
+.site-header .nav-link.active {
+  color: var(--te-brand);
+}
+
+@media (max-width: 767.98px) {
+  .site-header .btn-brand {
+    margin-top: .5rem;
+  }
+}
+
+/* ===== Hero ===== */
+.hero {
+  background: linear-gradient(135deg, #f5f3ff 0%, #f8fafc 55%, #ecfdf5 100%);
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .3rem .8rem;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--te-brand);
+  background: var(--te-brand-soft);
+  border: 1px solid #e0e7ff;
+  border-radius: 999px;
+}
+
+.hero-title {
+  margin: 1.25rem 0 1rem;
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -.02em;
+  color: var(--te-ink);
+}
+
+.page-title {
+  margin: .75rem 0 .5rem;
+  font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: var(--te-ink);
+}
+
+.hero-lead {
+  max-width: 36rem;
+  color: var(--te-muted);
+  font-size: 1.05rem;
+}
+
+.hero-lead a {
+  text-decoration: none;
+}
+
+.hero-hint {
+  margin: .75rem 0 0;
+  font-size: .8rem;
+  color: var(--te-muted);
+}
+
+/* ===== Search box ===== */
+.search-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  max-width: 48rem;
+  margin-top: 1.75rem;
+  padding: .5rem;
+  background: var(--te-surface);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: 0 10px 30px -12px rgba(15, 23, 42, .15);
+}
+
+.search-input {
+  flex: 1 1 14rem;
+  min-width: 0;
+  border: 0;
+  box-shadow: none !important;
+}
+
+.search-select {
+  flex: 0 1 11rem;
+  border: 0;
+  border-left: 1px solid var(--te-border);
+  border-radius: 0;
+  box-shadow: none !important;
+}
+
+.search-button {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+@media (max-width: 575.98px) {
+  .search-select {
+    flex-basis: 100%;
+    border-left: 0;
+    border-top: 1px solid var(--te-border);
+  }
+
+  .search-button {
+    flex-basis: 100%;
+    justify-content: center;
+  }
+}
+
+/* ===== Sections ===== */
+.section-title {
+  margin-bottom: .35rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--te-ink);
+  letter-spacing: -.01em;
+}
+
+.section-lead {
+  margin-bottom: 1.25rem;
+  color: var(--te-muted);
+}
+
+.chip {
+  display: inline-block;
+  padding: .45rem 1rem;
+  font-size: .9rem;
+  font-weight: 500;
+  color: var(--te-text);
+  text-decoration: none;
+  background: var(--te-surface);
+  border: 1px solid var(--te-border);
+  border-radius: 999px;
+  transition: border-color .15s, color .15s, background-color .15s;
+}
+
+.chip:hover {
+  color: var(--te-brand);
+  border-color: var(--te-brand-light);
+}
+
+.chip.active {
+  color: #fff;
+  background: var(--te-brand);
+  border-color: var(--te-brand);
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--te-muted);
+  background: #f8fafc;
+  border: 1px dashed var(--te-border);
+  border-radius: var(--te-radius);
+}
+
+/* ===== Cards ===== */
+.course-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--te-surface);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: 0 4px 14px -8px rgba(15, 23, 42, .12);
+  transition: transform .15s, box-shadow .15s;
+}
+
+.course-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -14px rgba(15, 23, 42, .25);
+}
+
+.course-media {
+  display: grid;
+  place-items: center;
+  height: 9rem;
+}
+
+.course-media svg {
+  width: 9rem;
+  height: auto;
+}
+
+.course-media--0 { background: #e0e7ff; }
+.course-media--1 { background: #ccfbf1; }
+.course-media--2 { background: #fef3c7; }
+
+.course-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.1rem 1.1rem 1.25rem;
+}
+
+.course-tag {
+  display: inline-block;
+  align-self: flex-start;
+  padding: .2rem .55rem;
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--te-brand);
+  background: var(--te-brand-soft);
+  border-radius: .4rem;
+}
+
+.course-title {
+  margin: .75rem 0 .2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--te-ink);
+}
+
+.course-inst {
+  margin-bottom: .9rem;
+  font-size: .85rem;
+  color: var(--te-muted);
+}
+
+.course-meta {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  margin-bottom: .35rem;
+  font-size: .82rem;
+  color: var(--te-muted);
+}
+
+.course-body .btn {
+  margin-top: 1rem;
+}
+
+.contact-list {
+  font-size: .88rem;
+}
+
+.contact-list dt {
+  font-weight: 600;
+  color: var(--te-ink);
+}
+
+.contact-list dd {
+  color: var(--te-muted);
+}
+
+/* ===== Details pages ===== */
+.back-link {
+  font-size: .9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.detail-text {
+  color: var(--te-text);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.offer-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+}
+
+.offer-dates {
+  font-weight: 600;
+  color: var(--te-ink);
+}
+
+.offer-price {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--te-ink);
+}
+
+.badge-available {
+  color: #047857;
+  background: #d1fae5;
+}
+
+.badge-soldout {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.institute-logo {
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: contain;
+  padding: .4rem;
+  background: var(--te-surface);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+}
+
+.contact-card.sticky-lg-top {
+  top: 1.5rem;
+}
+
+/* ===== Pagination ===== */
+.pagination-brand {
+  --bs-pagination-color: var(--te-text);
+  --bs-pagination-border-color: var(--te-border);
+  --bs-pagination-hover-color: var(--te-brand);
+  --bs-pagination-hover-bg: var(--te-brand-soft);
+  --bs-pagination-hover-border-color: var(--te-border);
+  --bs-pagination-focus-color: var(--te-brand);
+  --bs-pagination-focus-box-shadow: 0 0 0 .25rem rgba(67, 56, 202, .2);
+  --bs-pagination-active-bg: var(--te-brand);
+  --bs-pagination-active-border-color: var(--te-brand);
+  --bs-pagination-border-radius: .6rem;
+  gap: .35rem;
+}
+
+.pagination-brand .page-link {
+  min-width: 2.5rem;
+  text-align: center;
+  border-radius: .6rem !important;
+  font-weight: 600;
+}
+
+/* ===== Footer ===== */
+.site-footer {
+  color: #e2e8f0;
+  background: var(--te-footer);
+}
+
+.site-footer h2 {
+  color: #fff;
+}
+
+.footer-bottom {
+  color: #94a3b8;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+.footer-bottom a {
+  color: #cbd5e1;
+}
+
+.category-card {
+  color: inherit;
+  text-decoration: none;
 }
