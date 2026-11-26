@@ -4,9 +4,9 @@ public record ReservationResult(bool Success, string InquiryMessage, int? Reserv
 
 public interface ISeatAvailabilityService
 {
-    Task<int?> GetAvailableSeatsAsync(int idOferta, CancellationToken ct = default);
-    Task<ReservationResult> ReserveAsync(int idOferta, string userId,
+    Task<int?> GetAvailableSeatsAsync(int offeringId, CancellationToken ct = default);
+    Task<ReservationResult> ReserveAsync(int offeringId, string userId,
         CancellationToken ct = default);
-    Task<ReservationResult> CancelAsync(int idReserva, string userId,
+    Task<ReservationResult> CancelAsync(int reservationId, string userId,
         CancellationToken ct = default);
 }
