@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 @{
     var controller = ViewContext.RouteData.Values["controller"] as string;
 }
@@ -44,8 +44,30 @@
                                asp-area="" asp-controller="Institutes" asp-action="Index">Institutes</a>
                         </li>
                     </ul>
-                    @* TODO: link to the login page once the authentication module is ready. *@
-                    <a class="btn btn-brand" href="#">Log in</a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        @if (User.IsInRole("Institute"))
+                        {
+                            <a class="nav-link" asp-controller="InstituteManagement"
+                               asp-action="Index">My institute</a>
+                        }
+
+                        <form asp-controller="Account" asp-action="Logout"
+                              method="post" class="d-inline">
+                            <button type="submit" class="btn btn-brand">
+                                Log out
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center gap-2">
+                            <a class="nav-link" asp-controller="Account"
+                               asp-action="Register">Register</a>
+                            <a class="btn btn-brand" asp-controller="Account"
+                               asp-action="Login">Log in</a>
+                        </div>
+                    }
                 </div>
             </div>
         </nav>
@@ -64,8 +86,18 @@
                 <h2 class="h5 fw-bold mb-1">Do you represent an institute?</h2>
                 <p class="mb-0">Connect with your <span class="text-brand-light">future students</span>.</p>
             </div>
-            @* TODO: link to institute sign-up once it exists. *@
-            <a class="btn btn-brand btn-lg" href="#">Join TecnoEdu</a>
+            @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Institute"))
+            {
+                <a class="btn btn-brand btn-lg"
+                   asp-controller="InstituteManagement"
+                   asp-action="Index">My institute</a>
+            }
+            else if (User.Identity?.IsAuthenticated != true)
+            {
+                <a class="btn btn-brand btn-lg"
+                   asp-controller="Account"
+                   asp-action="Register">Join TecnoEdu</a>
+            }
         </div>
         <div class="footer-bottom">
             <div class="container small py-3">
